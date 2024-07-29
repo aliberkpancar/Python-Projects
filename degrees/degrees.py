@@ -92,23 +92,21 @@ def shortest_path(source, target):
 	frontier = QueueFrontier()
 	frontier.add(root)
 	explored = set()
-	while True:
-		if frontier.empty():
-			raise Exception("No path found between the source and target.")
-		node = frontier.remove()
-		if node.state == target:
+	while not frontier.empty():
+		current_node = frontier.remove()
+		if current_node.state == target:
 			path = []
-			while node.parent is not None:
-				path.append((node.action, node.state))
-				node = node.parent
+			while current_node.parent is not None:
+				path.append((current_node.action, current_node.state))
+				current_node = current_node.parent
 			path.reverse()
 			return path
-		explored.add(node.state)
-		for action, state in neighbors_for_person(node.state):
+		explored.add(current_node.state)
+		for action, state in neighbors_for_person(current_node.state):
 			if state not in explored and not frontier.contains_state(state):
-				sub = Node(state=state, parent=node, action=action)
+				sub = Node(state=state, parent=current_node, action=action)
 				frontier.add(sub)
-	raise NotImplementedError
+	return None
 
 
 def person_id_for_name(name):

@@ -2,4 +2,8 @@
 .DS_Store
 
 # Ignore .csv files
-*.csv
+# *.csv
+
+*.gitignore
+
+*.__pycache__/
