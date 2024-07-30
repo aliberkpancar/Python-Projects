@@ -1,7 +1,7 @@
 """
 Tic Tac Toe Player
 """
-from copy import deepcopy
+import copy
 import math
 
 X = "X"
@@ -35,13 +35,15 @@ def actions(board):
 	"""
 	Returns set of all possible actions (i, j) available on the board.
 	"""
+	if terminal(board):
+		return None
 	possible_actions = set()
-	for i in range (len(board)):
-		for j in range (len(board[i])):
-			if board[i][j] == "EMPTY":
+	for i in range (3):
+		for j in range (3):
+			if board[i][j] == EMPTY:
 				possible_actions.add((i,j))
-	return possible_actions if len(possible_actions) > 0 else None
-			
+	return possible_actions
+	
 
 def result(board, action):
 	"""
@@ -49,34 +51,25 @@ def result(board, action):
 	"""
 	if action not in actions(board):
 		raise Exception
-	backup_board = deepcopy(board)
- 
-	return board
-
+	backup_board = copy.deepcopy(board)
+	backup_board[action[0]][action[1]] = player(board)
+	return backup_board
 
 
 def winner(board):
 	"""
 	Returns the winner of the game, if there is one.
 	"""
-	print (range(len(board)))
-	for i in range(len(board)):
-		for j in range(len(board[i])):
-			if board[i][j] == "EMPTY":
-				return None
-	for i in range(len(board)):
-		for j in range(len(board[i])):
-			if board[i][0] == board[i][1] == board[i][2]:
-				return board[i][0]
-			elif board[0][j] == board[1][j] == board[2][j]:
-				return board[0][j]
-			elif board[0][0] == board[1][1] == board[2][2]:
-				return board[0][0]
-			elif board[0][2] == board[1][1] == board[2][0]:
-				return board[0][2]
+	for i in range(3):
+		if board[i][0] == board[i][1] == board[i][2] != EMPTY:
+			return board[i][0]
+		if board[0][i] == board[1][i] == board[2][i] != EMPTY:
+			return board[0][i]
+	if board[0][0] == board[1][1] == board[2][2] != EMPTY:
+		return board[0][0]
+	if board[0][2] == board[1][1] == board[2][0] != EMPTY:
+		return board[0][2]
 	return None
-
-
 
 
 def terminal(board):
@@ -97,9 +90,44 @@ def utility(board):
 	else:
 		return 0
 
+def optimal_max(board):
+	if terminal(board):
+		return utility(board), None
+	value = float('-inf')
+	best_move = None
+	for act in actions(board):
+		successor = result(board, act)
+		opt_value, _ = optimal_min(successor)
+		if opt_value > value:
+			value = opt_value
+			best_move = act
+			if value == 1:
+				break
+	return value, best_move
+
+def optimal_min(board):
+	if terminal(board):
+		return utility(board), None
+	value = float('inf')
+	best_move = None
+	for act in actions(board):
+		successor = result(board, act)
+		opt_value, _ = optimal_max(successor)
+		if opt_value < value:
+			value = opt_value
+			best_move = act
+			if value == -1:
+				break
+	return value, best_move
 
 def minimax(board):
 	"""
 	Returns the optimal action for the current player on the board.
 	"""
-	# If the board is a terminal board, the minimax function should return None
+	if terminal(board):
+		return None
+	if player(board) == X:
+		value, move = optimal_max(board)
+	else:
+		value, move = optimal_min(board)
+	return move
