@@ -22,13 +22,9 @@ def player(board):
 	"""
 	Returns player who has the next turn on a board.
 	"""
-	X = "X"
-	O = "O"
-	if board == initial_state():
-		return X
 	X_count = sum(row.count(X) for row in board)
 	O_count = sum(row.count(O) for row in board)
-	return X if X_count == O_count else O
+	return X if X_count <= O_count else O
 
 
 def actions(board):
@@ -37,12 +33,7 @@ def actions(board):
 	"""
 	if terminal(board):
 		return None
-	possible_actions = set()
-	for i in range (3):
-		for j in range (3):
-			if board[i][j] == EMPTY:
-				possible_actions.add((i,j))
-	return possible_actions
+	return {(i, j) for i in range(3) for j in range(3) if board[i][j] == EMPTY}
 	
 
 def result(board, action):
@@ -50,10 +41,10 @@ def result(board, action):
 	Returns the board that results from making move (i, j) on the board.
 	"""
 	if action not in actions(board):
-		raise Exception
-	backup_board = copy.deepcopy(board)
-	backup_board[action[0]][action[1]] = player(board)
-	return backup_board
+		raise Exception("Invalid action")
+	new_board = copy.deepcopy(board)
+	new_board[action[0]][action[1]] = player(board)
+	return new_board
 
 
 def winner(board):
@@ -76,7 +67,7 @@ def terminal(board):
 	"""
 	Returns True if game is over, False otherwise.
 	"""
-	return True if winner(board) != None else False
+	return winner(board) is not None or not any(EMPTY in row for row in board)
 
 
 def utility(board):
@@ -127,7 +118,7 @@ def minimax(board):
 	if terminal(board):
 		return None
 	if player(board) == X:
-		value, move = optimal_max(board)
+		_, move = optimal_max(board)
 	else:
-		value, move = optimal_min(board)
+		_, move = optimal_min(board)
 	return move
