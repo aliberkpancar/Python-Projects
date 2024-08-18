@@ -52,13 +52,13 @@ def winner(board):
 	Returns the winner of the game, if there is one.
 	"""
 	for i in range(3):
-		if board[i][0] == board[i][1] == board[i][2] != EMPTY:
+		if board[i][0] == board[i][1] == board[i][2] and board[i][0] != EMPTY:
 			return board[i][0]
-		if board[0][i] == board[1][i] == board[2][i] != EMPTY:
+		if board[0][i] == board[1][i] == board[2][i] and board[0][i] != EMPTY:
 			return board[0][i]
-	if board[0][0] == board[1][1] == board[2][2] != EMPTY:
+	if board[0][0] == board[1][1] == board[2][2] and board[0][0] != EMPTY:
 		return board[0][0]
-	if board[0][2] == board[1][1] == board[2][0] != EMPTY:
+	if board[0][2] == board[1][1] == board[2][0] and board[0][2] != EMPTY:
 		return board[0][2]
 	return None
 
@@ -87,8 +87,8 @@ def optimal_max(board):
 	value = float('-inf')
 	best_move = None
 	for act in actions(board):
-		successor = result(board, act)
-		opt_value, _ = optimal_min(successor)
+		temp = result(board, act)
+		opt_value, _ = optimal_min(temp)
 		if opt_value > value:
 			value = opt_value
 			best_move = act
@@ -118,7 +118,7 @@ def minimax(board):
 	if terminal(board):
 		return None
 	if player(board) == X:
-		_, move = optimal_max(board)
+		_, best_move = optimal_max(board)
 	else:
-		_, move = optimal_min(board)
-	return move
+		_, best_move = optimal_min(board)
+	return best_move
