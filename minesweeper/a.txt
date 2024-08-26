@@ -1,0 +1,27 @@
+- self.mark_safe(cell)
+- self.moves_made.add(cell)
+- find neighbors cell and count with function
+- Create an object with these values
+- Append this sentences to knowledgebase
+- Create a list of new inferences
+- Check sentence in knowledgebase
+
+- if any sentence of sentences is superset , 
+find the difference between the two sets of cells
+- If the mine count (count) is the same for both sentences, it means the additional cells in setDiff 
+	must all be safe (because no extra mines are present). The AI then marks
+	these cells as safe.
+- If the difference in the number of cells (setDiff) equals the difference
+	in the mine counts, it means the additional cells in setDiff must all be mines.
+	The AI then marks these cells as mines.
+- If neither of the above cases applies, it means that the difference in cells and 
+counts can be used to create a new inference. This new inference is added to new_inferences.
+- If the cells in the new sentence are a superset of those in the existing sentence, 
+	we find the difference (setDiff) between the two sets of cells (now setDiff is the cells 
+	that are in the new sentence but not in the existing sentence)
+- If the mine counts are the same, it means the cells in setDiff are all safe.
+- If the difference in the number of cells equals the difference in the mine counts, it means the cells in setDiff are all mines.
+- If neither of the above cases applies, a new inference is created and added to new_inferences.
+- Update Knowledge Base with New Inferences(look link)
+
+https://chatgpt.com/share/c7d796ff-fda1-4849-9415-597ec4172e67

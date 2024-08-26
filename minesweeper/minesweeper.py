@@ -1,7 +1,6 @@
 import itertools
 import random
 
-
 class Minesweeper():
 	"""
 	Minesweeper game representation
@@ -204,11 +203,29 @@ class MinesweeperAI():
 		for sentence in self.knowledge:
 			sentence.mark_safe(cell)
 
+	def update_knowledge(self, cell):
+		pass
+
+	def find_neighbors(self, cell, count):
+		neighbors = [
+			(i, j)
+			for i in range(cell[0] - 1, cell[0] + 2)
+			for j in range(cell[1] - 1, cell[1] + 2)
+			if (0 <= i < self.height) and (0 <= j < self.width)
+			and (i, j) != cell  
+			and (i, j) not in self.safe
+			and (i, j) not in self.mines
+		]
+    
+    	count -= len(neighbors)
+    
+    	return neighbors, count
+
 	def add_knowledge(self, cell, count):
 		"""
 		Called when the Minesweeper board tells us, for a given
 		safe cell, how many neighboring cells have mines in them.
-
+		
 		This function should:
 			1) mark the cell as a move that has been made
 			2) mark the cell as safe
@@ -219,11 +236,24 @@ class MinesweeperAI():
 			5) add any new sentences to the AI's knowledge base
 				if they can be inferred from existing knowledge
 		"""
-		best_move = [
-			(i, j)
-			for i in range(self.height)
-			for j in range(self.width)
-		]
+		self.mark_safe(cell)
+		self.moves_made.add(cell)
+		neigbhbors , count = find_neighbors(dell, count)
+		sentence = Sentence(neigbhbors, count)
+  		self.knowledge.append(sentence)
+
+		inference = []
+		for sent in self.knowledge:
+			if sent == sentence:
+				continue
+			elif sent.cells.superset(sentence.cell):
+				difference = sent.cell - sentence.cell
+
+		
+		
+
+
+
 	def make_safe_move(self):
 		"""
 		Returns a safe cell to choose on the Minesweeper board.
