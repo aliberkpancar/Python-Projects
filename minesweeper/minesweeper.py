@@ -156,11 +156,8 @@ class Sentence():
 		Updates internal knowledge representation given the fact that
 		a cell is known to be safe.
 		"""
-		if cell in self.safes:
-			return
-		self.cells.discard(cell)
-		for sentence in self.knowledge:
-			sentence.mark_safe(cell)
+		if cell in self.cells:
+			self.cells.discard(cell)
 		
 
 
@@ -203,8 +200,44 @@ class MinesweeperAI():
 		for sentence in self.knowledge:
 			sentence.mark_safe(cell)
 
-	def update_knowledge(self, cell):
-		pass
+	def update_knowledge(self):
+		"""
+		Update knowledge by marking safe cells or mines and making inferences.
+		"""
+		inferred_sentences = []
+
+		for sentence in self.knowledge.copy():
+			safes = sentence.known_safes()
+			mines = sentence.known_mines()
+
+			if safes:
+				for safe in safes:
+					self.mark_safe(safe)
+			if mines:
+				for mine in mines:
+					self.mark_mine(mine)
+
+			for other_sentence in self.knowledge.copy():
+				if sentence == other_sentence:
+					continue
+
+				if sentence.cells.issubset(other_sentence.cells):
+					difference = other_sentence.cells - sentence.cells
+					inferred_sentences.append(Sentence(difference, other_sentence.count - sentence.count))
+				elif other_sentence.cells.issubset(sentence.cells):
+					difference = sentence.cells - other_sentence.cells
+					inferred_sentences.append(Sentence(difference, sentence.count - other_sentence.count))
+
+		self.knowledge.extend(inferred_sentences)
+
+		self.clean_knowledge()
+
+	def clean_knowledge(self):
+		"""
+		Clean up the knowledge base by removing duplicate or empty sentences.
+		"""
+		self.knowledge = [sentence for sentence in self.knowledge if sentence.cells]
+		self.knowledge = list(set(self.knowledge))
 
 	def find_neighbors(self, cell, count):
 		neighbors = [
@@ -213,13 +246,13 @@ class MinesweeperAI():
 			for j in range(cell[1] - 1, cell[1] + 2)
 			if (0 <= i < self.height) and (0 <= j < self.width)
 			and (i, j) != cell  
-			and (i, j) not in self.safe
+			and (i, j) not in self.safes
 			and (i, j) not in self.mines
 		]
-    
-    	count -= len(neighbors)
-    
-    	return neighbors, count
+	
+		count -= len(neighbors)
+	
+		return neighbors, count
 
 	def add_knowledge(self, cell, count):
 		"""
@@ -238,19 +271,19 @@ class MinesweeperAI():
 		"""
 		self.mark_safe(cell)
 		self.moves_made.add(cell)
-		neigbhbors , count = find_neighbors(dell, count)
+		neigbhbors , count = self.find_neighbors(cell, count)
 		sentence = Sentence(neigbhbors, count)
-  		self.knowledge.append(sentence)
+		self.knowledge.append(sentence)
 
-		inference = []
-		for sent in self.knowledge:
-			if sent == sentence:
-				continue
-			elif sent.cells.superset(sentence.cell):
-				difference = sent.cell - sentence.cell
+		self.update_knowledge()
 
 		
+		# self.remove_dups()
+		# self.remove_sures()		
+			
 		
+		
+  
 
 
 

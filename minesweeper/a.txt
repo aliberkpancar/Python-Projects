@@ -5,9 +5,9 @@
 - Append this sentences to knowledgebase
 - Create a list of new inferences
 - Check sentence in knowledgebase
-
 - if any sentence of sentences is superset , 
 find the difference between the two sets of cells
+
 - If the mine count (count) is the same for both sentences, it means the additional cells in setDiff 
 	must all be safe (because no extra mines are present). The AI then marks
 	these cells as safe.
